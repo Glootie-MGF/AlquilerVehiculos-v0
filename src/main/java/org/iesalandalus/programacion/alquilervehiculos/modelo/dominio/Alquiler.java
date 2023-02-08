@@ -19,7 +19,7 @@ public class Alquiler {
 	private Cliente cliente;
 
 	//Constructor con parámetros
-	public Alquiler(LocalDate fechaAlquiler, Turismo turismo, Cliente cliente) {
+	public Alquiler(Cliente cliente, Turismo turismo,  LocalDate fechaAlquiler) {
 		setFechaAlquiler(fechaAlquiler);
 		setTurismo(turismo);
 		setCliente(cliente);
@@ -27,17 +27,19 @@ public class Alquiler {
 	//Constructor copia
 	public Alquiler(Alquiler alquiler) {
 		if (alquiler == null) {
-			throw new NullPointerException("ERROR: No se pueden copiar datos nulos.");
+			throw new NullPointerException("ERROR: No es posible copiar un alquiler nulo.");
 		}
 		setFechaAlquiler(alquiler.getFechaAlquiler());
-		setTurismo(alquiler.getTurismo());
-		setCliente(alquiler.getCliente());
+		setFechaDevolucion(alquiler.getFechaDevolucion());
+		setTurismo(new Turismo(alquiler.getTurismo()));
+		setCliente(new Cliente(alquiler.getCliente()));
+		
 	}
 	//Métodos
 	public void devolver(LocalDate fechaDevolucion) throws OperationNotSupportedException {
 		//se encargará de asignar la fecha de devoluión si ésta es correcta
 		if (this.fechaDevolucion != null) {
-			throw new OperationNotSupportedException("ERROR: ya tiene fecha de devolución.");
+			throw new OperationNotSupportedException("ERROR: La devolución ya estaba registrada.");
 		}
 		setFechaDevolucion(fechaDevolucion);
 	}
@@ -47,11 +49,15 @@ public class Alquiler {
 		//(precioDia + factorCilindrada) * numDias
 		//factorCilindrada = cilindrada del turismo / 10 
 		//numDias = fechaDevolucion-fechaAlquiler
+		int precio = -1;
 		
-		int factorCilindrada = turismo.getCilindrada()/10;
-		Duration numDias = Duration.between(fechaDevolucion, fechaAlquiler);
-		int precio = (int)((PRECIO_DIA + factorCilindrada) * numDias.toDays());
-		
+		if (fechaDevolucion == null) {
+			precio = 0;
+		}else {
+			int factorCilindrada = turismo.getCilindrada()/10;
+			Duration numDias = Duration.between(fechaAlquiler.atStartOfDay(),fechaDevolucion.atStartOfDay());
+			precio = (int)((PRECIO_DIA + factorCilindrada) * numDias.toDays());
+		}
 		return precio;
 	}
 	//Métodos get y set
@@ -61,10 +67,10 @@ public class Alquiler {
 
 	public void setFechaAlquiler(LocalDate fechaAlquiler) {
 		if (fechaAlquiler == null) {
-			throw new NullPointerException("La fecha NO puede ser nula.");
+			throw new NullPointerException("ERROR: La fecha de alquiler no puede ser nula.");
 		}
 		if (fechaAlquiler.isAfter(LocalDate.now())) {
-			throw new IllegalArgumentException("La fecha de alquiler no puede ser posterior a la de hoy.");
+			throw new IllegalArgumentException("ERROR: La fecha de alquiler no puede ser futura.");
 		}
 		this.fechaAlquiler = fechaAlquiler;
 	}
@@ -75,13 +81,15 @@ public class Alquiler {
 
 	public void setFechaDevolucion(LocalDate fechaDevolucion) {
 		if (fechaDevolucion == null) {
-			throw new NullPointerException("La fecha NO puede ser nula.");
+			throw new NullPointerException("ERROR: La fecha de devolución no puede ser nula.");
 		}
 		//La fecha de devolución no puede ser igual o anterior a la fecha de alquiler 
 		//y tampoco puede ser posterior a hoy
-		if (fechaDevolucion.isEqual(fechaAlquiler)||fechaDevolucion.isBefore(fechaAlquiler)||
-				fechaDevolucion.isAfter(LocalDate.now())) {
-			throw new IllegalArgumentException("La fecha de devolución es errónea.");
+		if (fechaDevolucion.isAfter(LocalDate.now())) {
+			throw new IllegalArgumentException("ERROR: La fecha de devolución no puede ser futura.");
+		}
+		if (fechaDevolucion.isEqual(fechaAlquiler)||fechaDevolucion.isBefore(fechaAlquiler)) {
+			throw new IllegalArgumentException("ERROR: La fecha de devolución debe ser posterior a la fecha de alquiler.");
 		}
 		this.fechaDevolucion = fechaDevolucion;
 	}
@@ -92,7 +100,7 @@ public class Alquiler {
 
 	public void setTurismo(Turismo turismo) {
 		if (turismo == null) {
-			throw new NullPointerException("El turismo no puede ser nulo.");
+			throw new NullPointerException("ERROR: El turismo no puede ser nulo.");
 		}
 		this.turismo = turismo;
 	}
@@ -103,7 +111,7 @@ public class Alquiler {
 
 	public void setCliente(Cliente cliente) {
 		if (cliente == null) {
-			throw new NullPointerException("El cliente no puede ser nulo.");
+			throw new NullPointerException("ERROR: El cliente no puede ser nulo.");
 		}
 		this.cliente = cliente;
 	}
@@ -126,11 +134,12 @@ public class Alquiler {
 	}
 	@Override
 	public String toString() {
-		return String.format("Alquiler [fechaAlquiler=%s, fechaDevolucion=%s, turismo=%s, cliente=%s]", fechaAlquiler,
-				fechaDevolucion, turismo, cliente);
+		if (fechaDevolucion == null) {
+			return String.format("%s <---> %s, %s - %s (%d€)", cliente, turismo, fechaAlquiler.format(FORMATO_FECHA), "Aún no devuelto", 0);
+		}
+		return String.format("%s <---> %s, %s - %s (%d€)", cliente, turismo, fechaAlquiler.format(FORMATO_FECHA),
+				fechaDevolucion.format(FORMATO_FECHA), getPrecio());
 	}
-
-	
 
 
 }
