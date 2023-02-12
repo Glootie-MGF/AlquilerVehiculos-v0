@@ -17,7 +17,7 @@ public class Clientes {
 	}
 
 	public List<Cliente> get() {
-		return coleccionClientes;
+		return new ArrayList<>(coleccionClientes);
 	}
 
 	public int getCantidad() {
@@ -26,48 +26,71 @@ public class Clientes {
 
 	public void insertar(Cliente cliente) throws OperationNotSupportedException {
 		if (cliente == null) {
-			throw new IllegalArgumentException("No se puede insertar un cliente nulo.");
+			throw new NullPointerException("ERROR: No se puede insertar un cliente nulo.");
 		}
 		if (coleccionClientes.contains(cliente)) {
-			throw new OperationNotSupportedException("El cliente ya existe.");
+			throw new OperationNotSupportedException("ERROR: Ya existe un cliente con ese DNI.");
 		} else {
-			coleccionClientes.add(new Cliente(cliente));
+			coleccionClientes.add(cliente);
+			//Cuando tengamos que crear nuevas instancias entonces:
+			//coleccionClientes.add(new Cliente(cliente));
 		}
 	}
 
 	public Cliente buscar(Cliente cliente) {
-		int indice = coleccionClientes.indexOf(cliente);
-		if (indice != -1) {
-			return new Cliente(coleccionClientes.get(indice));
-		} else {
-			return null;
+		if (cliente == null) {
+			throw new NullPointerException("ERROR: No se puede buscar un cliente nulo.");
 		}
+		
+		int indice = coleccionClientes.indexOf(cliente);
+		//Cliente auxiliar
+		Cliente aux = null;
+		
+		if (indice != -1) {
+			aux = coleccionClientes.get(indice);
+			//aux = new Cliente(coleccionClientes.get(indice));
+		}
+		 return aux;
 	}
 
 	public void borrar(Cliente cliente) throws OperationNotSupportedException {
 		if (cliente == null) {
-			throw new NullPointerException("No se puede BORRAR un cliente nulo.");
+			throw new NullPointerException("ERROR: No se puede borrar un cliente nulo.");
 		}
-		if (!coleccionClientes.remove(cliente)) {
-			throw new OperationNotSupportedException("El cliente a borrar NO existe.");
+		if (!coleccionClientes.contains(cliente)) {
+			throw new OperationNotSupportedException("ERROR: No existe ningún cliente con ese DNI.");
 		}
+		coleccionClientes.remove(cliente);
 	}
 	
 	public void modificar(Cliente cliente, String nombre, String telefono) throws OperationNotSupportedException {
-		//Crea el método modificar que permitirá cambiar el nombre o el teléfono 
-		//(si estos parámetros no son nulos ni blancos) de un cliente existente y 
-		//si no lanzará la correspondiente excepción
-		if (buscar(cliente) != null) {
-			if (nombre != null || !nombre.isBlank()) {
-				cliente.setNombre(nombre);	
+		// Crea el método modificar que permitirá cambiar el nombre o el teléfono
+		// (si estos parámetros no son nulos ni blancos) de un cliente existente y
+		// si no lanzará la correspondiente excepción
+		
+		//		if (buscar(cliente) != null) {
+		//			if (nombre != null || !nombre.isBlank()) {
+		//				cliente.setNombre(nombre);	
+		//			}
+		//			if (telefono != null || !telefono.isBlank()) {
+		//				cliente.setTelefono(telefono);	
+		//			}
+		//		}else {
+		//			throw new OperationNotSupportedException("ERROR: No existe ningún cliente con ese DNI.");
+		//		}
+		if (cliente == null) {
+			throw new NullPointerException("ERROR: No se puede modificar un cliente nulo.");
+		}
+		if (coleccionClientes.contains(cliente)) {
+			if (nombre != null && !nombre.isBlank()) {
+				buscar(cliente).setNombre(nombre);
 			}
-			if (telefono != null || !telefono.isBlank()) {
-				cliente.setTelefono(telefono);	
+			if (telefono != null && !telefono.isBlank()) {
+				buscar(cliente).setTelefono(telefono);
 			}
-		}else {
-			throw new OperationNotSupportedException("El cliente no se puede MODIFICAR.");
+		} else {
+			throw new OperationNotSupportedException("ERROR: No existe ningún cliente con ese DNI.");
 		}
 	}
-	
 	
 }
