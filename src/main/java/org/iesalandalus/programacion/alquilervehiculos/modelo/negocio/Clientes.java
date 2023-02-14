@@ -16,6 +16,7 @@ public class Clientes {
 		coleccionClientes = new ArrayList<>();
 	}
 
+	//Métodos
 	public List<Cliente> get() {
 		return new ArrayList<>(coleccionClientes);
 	}
