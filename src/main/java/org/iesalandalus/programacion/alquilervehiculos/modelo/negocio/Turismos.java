@@ -30,7 +30,7 @@ public class Turismos {
 			throw new NullPointerException("ERROR: No se puede insertar un turismo nulo.");
 		}
 		if (coleccionTurismos.contains(turismo)) {
-			throw new OperationNotSupportedException("ERROR: Ya existe un turismo con esa matricula.");
+			throw new OperationNotSupportedException("ERROR: Ya existe un turismo con esa matrícula.");
 		} else {
 			coleccionTurismos.add(turismo);
 			// Cuando tengamos que crear nuevas instancias entonces:
