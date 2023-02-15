@@ -65,7 +65,7 @@ public class Alquiler {
 		return fechaAlquiler;
 	}
 
-	public void setFechaAlquiler(LocalDate fechaAlquiler) {
+	private void setFechaAlquiler(LocalDate fechaAlquiler) {
 		if (fechaAlquiler == null) {
 			throw new NullPointerException("ERROR: La fecha de alquiler no puede ser nula.");
 		}
@@ -79,7 +79,7 @@ public class Alquiler {
 		return fechaDevolucion;
 	}
 
-	public void setFechaDevolucion(LocalDate fechaDevolucion) {
+	private void setFechaDevolucion(LocalDate fechaDevolucion) {
 		if (fechaDevolucion == null) {
 			throw new NullPointerException("ERROR: La fecha de devolución no puede ser nula.");
 		}
@@ -98,7 +98,7 @@ public class Alquiler {
 		return turismo;
 	}
 
-	public void setTurismo(Turismo turismo) {
+	private void setTurismo(Turismo turismo) {
 		if (turismo == null) {
 			throw new NullPointerException("ERROR: El turismo no puede ser nulo.");
 		}
@@ -109,7 +109,7 @@ public class Alquiler {
 		return cliente;
 	}
 
-	public void setCliente(Cliente cliente) {
+	private void setCliente(Cliente cliente) {
 		if (cliente == null) {
 			throw new NullPointerException("ERROR: El cliente no puede ser nulo.");
 		}

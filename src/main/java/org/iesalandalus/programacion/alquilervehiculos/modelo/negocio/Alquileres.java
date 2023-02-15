@@ -1,5 +1,6 @@
 package org.iesalandalus.programacion.alquilervehiculos.modelo.negocio;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,23 +54,57 @@ public class Alquileres {
 		if (alquiler == null) {
 			throw new NullPointerException("ERROR: No se puede insertar un alquiler nulo.");
 		}
-		if (coleccionAlquileres.contains(alquiler)) {
-			throw new OperationNotSupportedException("ERROR: Ya existe un cliente con ese DNI.");
-		} else {
-			coleccionAlquileres.add(alquiler);
+		comprobarAlquiler(alquiler.getCliente(),alquiler.getTurismo(),alquiler.getFechaAlquiler());	
+		coleccionAlquileres.add(alquiler);
 			// Cuando tengamos que crear nuevas instancias entonces:
 			// coleccionClientes.add(new Cliente(cliente));
-		}
+	
 	}
 
-	// TO DO: método comprobarAlquiler y devolver
+	private void comprobarAlquiler (Cliente cliente, Turismo turismo, LocalDate fechaAlquiler) throws OperationNotSupportedException {
+		//comprobará que en la lista no existe ningún alquiler sin devolver 
+		//ni para el cliente ni para el turismo y que tampoco hay un alquiler devuelto, 
+		//del cliente o del turismo, con fecha de devolución posterior(after) o igual  
+		//a la fecha en la que se pretende alquilar.
+		for (Alquiler alquiler : coleccionAlquileres) {
+			if (alquiler.getFechaDevolucion() == null) {
+				//alquileres sin devolver
+				if (cliente.equals(alquiler.getCliente())) {
+					throw new OperationNotSupportedException("ERROR: El cliente tiene otro alquiler sin devolver.");
+				}
+				if (turismo.equals(alquiler.getTurismo())) {
+					throw new OperationNotSupportedException("ERROR: El turismo está actualmente alquilado.");
+				}
+			}else {
+				//Alquileres devueltos
+				if (cliente.equals(alquiler.getCliente()) && (alquiler.getFechaDevolucion().isAfter(fechaAlquiler) || alquiler.getFechaDevolucion().isEqual(fechaAlquiler))) {
+					throw new OperationNotSupportedException("ERROR: El cliente tiene un alquiler posterior.");
+				}
+				if (turismo.equals(alquiler.getTurismo()) && (alquiler.getFechaDevolucion().isAfter(fechaAlquiler) || alquiler.getFechaDevolucion().isEqual(fechaAlquiler))) {
+					throw new OperationNotSupportedException("ERROR: El turismo tiene un alquiler posterior.");
+				}
+			}
+		}
+	}
+	public void devolver (Alquiler alquiler, LocalDate fechaDevolucion) throws OperationNotSupportedException {
+		//Devolverá (asignará la fecha de devolución) si éste existe en 
+		//la lista o lanzará la excepción en caso contrario.
+		if (alquiler == null) {
+			throw new NullPointerException("ERROR: No se puede devolver un alquiler nulo.");
+		}
+		if (buscar(alquiler) != null) {
+			alquiler.devolver(fechaDevolucion);
+		}else {
+			throw new OperationNotSupportedException("ERROR: No existe ningún alquiler igual.");
+		}
+	}
 
 	public void borrar(Alquiler alquiler) throws OperationNotSupportedException {
 		if (alquiler == null) {
 			throw new NullPointerException("ERROR: No se puede borrar un alquiler nulo.");
 		}
 		if (!coleccionAlquileres.contains(alquiler)) {
-			throw new OperationNotSupportedException("ERROR: No existe ningún cliente con ese DNI.");
+			throw new OperationNotSupportedException("ERROR: No existe ningún alquiler igual.");
 		}
 		coleccionAlquileres.remove(alquiler);
 	}
