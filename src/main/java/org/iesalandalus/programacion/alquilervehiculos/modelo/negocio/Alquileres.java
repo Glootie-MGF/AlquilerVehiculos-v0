@@ -58,7 +58,6 @@ public class Alquileres {
 		coleccionAlquileres.add(alquiler);
 			// Cuando tengamos que crear nuevas instancias entonces:
 			// coleccionClientes.add(new Cliente(cliente));
-	
 	}
 
 	private void comprobarAlquiler (Cliente cliente, Turismo turismo, LocalDate fechaAlquiler) throws OperationNotSupportedException {
