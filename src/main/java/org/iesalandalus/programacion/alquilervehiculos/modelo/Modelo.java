@@ -1,6 +1,8 @@
 package org.iesalandalus.programacion.alquilervehiculos.modelo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.OperationNotSupportedException;
 
@@ -44,17 +46,19 @@ public class Modelo {
 	}
 	public void insertar (Alquiler alquiler) throws OperationNotSupportedException {
 		if (alquiler == null) {
-			throw new NullPointerException("ERROR: No se puede insertar un alquiler nulo.");
+			throw new NullPointerException("ERROR: No se puede realizar un alquiler nulo.");
 		}
+		
 		Cliente clienteBuscado = clientes.buscar(alquiler.getCliente());
 		Turismo turismoBuscado = turismos.buscar(alquiler.getTurismo());
 		
 		if (clienteBuscado == null) {
-			throw new NullPointerException("ERROR: Cliente NULO.");
+			throw new OperationNotSupportedException("ERROR: No existe el cliente del alquiler.");
 		}
 		if (turismoBuscado == null) {
-			throw new NullPointerException("ERROR: Turismo NULO.");
+			throw new OperationNotSupportedException("ERROR: No existe el turismo del alquiler.");
 		}
+		
 		alquileres.insertar(new Alquiler(clienteBuscado, turismoBuscado, alquiler.getFechaAlquiler()));
 	}
 	
@@ -78,8 +82,9 @@ public class Modelo {
 	//Crea el método devolver que  realizará la devolución, si es posible, del alquiler pasado.
 	public void devolver (Alquiler alquiler, LocalDate fechaDevolucion) throws OperationNotSupportedException {
 		Alquiler alquilerBuscado = buscar(alquiler);
+		
 		if (alquilerBuscado == null) {
-			throw new NullPointerException("ERROR: Alquiler NULO.");
+			throw new OperationNotSupportedException("ERROR: No existe el ALQUILER.");
 		}
 		alquileres.devolver(alquilerBuscado, fechaDevolucion);
 	}
@@ -87,14 +92,64 @@ public class Modelo {
 	//Crea los diferentes métodos borrar, teniendo en cuenta que los borrados 
 	//se realizarán en cascada, es decir, si borramos un cliente también borraremos 
 	//todos sus alquileres y lo mismo pasará con los turismos.
-	public void borrar (Cliente cliente) {
-		
+	public void borrar(Cliente cliente) throws OperationNotSupportedException {
+		for (Alquiler alquilerAux : alquileres.get(cliente)) {
+			borrar(alquilerAux);
+		}
+		clientes.borrar(cliente);
 	}
-	
-	
-	
-	
-	
-	
+
+	public void borrar(Turismo turismo) throws OperationNotSupportedException {
+		for (Alquiler alquilerAux : alquileres.get(turismo)) {
+			borrar(alquilerAux);
+		}
+		turismos.borrar(turismo);
+	}
+
+	public void borrar(Alquiler alquiler) throws OperationNotSupportedException {
+		alquileres.borrar(alquiler);
+	}
+
+	//Crea los diferentes métodos get, que deben devolver una nueva lista pero que 
+	//contenga nuevas instancias no una copia de los elementos.
+	public List<Cliente> getClientes() {
+		List<Cliente> listaClientes = new ArrayList<>();
+		for (Cliente cliente : clientes.get()) {
+			listaClientes.add(new Cliente(cliente));
+		}
+		return listaClientes;
+	}
+
+	public List<Turismo> getTurismos() {
+		List<Turismo> listaTurismos = new ArrayList<>();
+		for (Turismo turismo : turismos.get()) {
+			listaTurismos.add(new Turismo(turismo));
+		}
+		return listaTurismos;
+	}
+
+	public List<Alquiler> getAlquileres() {
+		List<Alquiler> listaAlquileres = new ArrayList<>();
+		for (Alquiler alquiler : alquileres.get()) {
+			listaAlquileres.add(new Alquiler(alquiler));
+		}
+		return listaAlquileres;
+	}
+
+	public List<Alquiler> getAlquileres(Cliente cliente) {
+		List<Alquiler> listaAlquileresConCliente = new ArrayList<>();
+		for (Alquiler alquilerAux : alquileres.get(cliente)) {
+			listaAlquileresConCliente.add(new Alquiler(alquilerAux));
+		}
+		return listaAlquileresConCliente;
+	}
+
+	public List<Alquiler> getAlquileres(Turismo turismo) {
+		List<Alquiler> listaAlquileresConTurismo = new ArrayList<>();
+		for (Alquiler alquilerAux : alquileres.get(turismo)) {
+			listaAlquileresConTurismo.add(new Alquiler(alquilerAux));
+		}
+		return listaAlquileresConTurismo;
+	}
 	
 }
