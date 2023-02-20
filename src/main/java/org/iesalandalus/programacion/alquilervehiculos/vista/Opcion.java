@@ -35,7 +35,7 @@ private String texto;
 			return values()[ordinalEscogido];
 			
 		} else {
-			throw new IllegalArgumentException("El número escogido no es válido");
+			throw new IllegalArgumentException("ERROR: Opción escogida no válida.");
 		}
 	}
 	
