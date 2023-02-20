@@ -81,12 +81,12 @@ public class Modelo {
 	
 	//Crea el método devolver que  realizará la devolución, si es posible, del alquiler pasado.
 	public void devolver (Alquiler alquiler, LocalDate fechaDevolucion) throws OperationNotSupportedException {
-		Alquiler alquilerBuscado = buscar(alquiler);
+		Alquiler alquilerBuscado = alquileres.buscar(alquiler);
 		
 		if (alquilerBuscado == null) {
-			throw new OperationNotSupportedException("ERROR: No existe el ALQUILER.");
+			throw new OperationNotSupportedException("ERROR: No existe el alquiler a devolver.");
 		}
-		alquileres.devolver(alquilerBuscado, fechaDevolucion);
+		alquilerBuscado.devolver(fechaDevolucion);
 	}
 	
 	//Crea los diferentes métodos borrar, teniendo en cuenta que los borrados 
