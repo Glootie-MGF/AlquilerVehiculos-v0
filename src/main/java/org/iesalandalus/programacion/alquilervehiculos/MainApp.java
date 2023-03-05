@@ -7,9 +7,6 @@ import org.iesalandalus.programacion.alquilervehiculos.vista.Vista;
 public class MainApp {
 
 	public static void main(String[] args) {
-		// Ánimo!!!!
-		
-		
 		
 		/*
 		 * Crea la clase MainApp con un único método main que será el método de entrada
@@ -19,6 +16,10 @@ public class MainApp {
 		 * oportunas y cuando consideres que todo es correcto, realiza el último commit
 		 * y seguidamente realiza el push a tu repositorio remoto.
 		 */
+		Modelo modelo = new Modelo();
+		Vista vista = new Vista();
+		Controlador controlador = new Controlador(modelo, vista);
+		controlador.comenzar();
 	}
 
 }
